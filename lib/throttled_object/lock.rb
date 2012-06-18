@@ -1,4 +1,4 @@
-require 'Redis'
+require 'redis'
 
 module ThrottledObject
   class Lock
@@ -14,7 +14,7 @@ module ThrottledObject
       @amount     = options[:amount]
       @redis      = options[:redis] || Redis.current
       _period     = options[:period]
-      raise ArgumentError.new("You must provide an :identifier as a string") unless @identifier.is_a?(String)
+      raise ArgumentError.new("You must provide an :identifier as a string") unless identifier.is_a?(String)
       raise ArgumentError.new("You must provide a valid amount of > hits per period") unless amount.is_a?(Numeric) && amount > 0
       raise ArgumentError.new("You must provide a valid period of > 0 seconds") unless _period.is_a?(Numeric) && _period > 0
       @period     = (_period.to_f * 1000).ceil
