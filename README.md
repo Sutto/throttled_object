@@ -6,6 +6,9 @@ to a given object. It provides an interface to interact with an object, sleeping
 The ideal use for this is for access to APIs with a blocking interface (e.g. Run the code in a thread,
 sleep until it's available).
 
+**PLEASE NOTE:** I don't yet consider this production worthy. There are still bugs in the locking algorithm
+that need to be worked out for it work efficiently. This will be done in the near future.
+
 ## Installation
 
 Add this line to your application's Gemfile:
