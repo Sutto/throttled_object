@@ -14,4 +14,10 @@ Gem::Specification.new do |gem|
   gem.name          = "throttled_object"
   gem.require_paths = ["lib"]
   gem.version       = ThrottledObject::VERSION
+
+  gem.add_dependency 'redis', '~> 3.0'
+  gem.add_development_dependency 'timecop'
+  gem.add_development_dependency 'rspec', '~> 2.0'
+  gem.add_development_dependency 'rake'
+
 end
