@@ -3,9 +3,9 @@ require File.expand_path('../lib/throttled_object/version', __FILE__)
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Darcy Laycock"]
-  gem.email         = ["sutto@sutto.net"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.email         = ["darcy@filtersquad.com"]
+  gem.description   = %q{Distributed Object Locks built on Redis.}
+  gem.summary       = %q{Distributed Object Locks built on Redis.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
