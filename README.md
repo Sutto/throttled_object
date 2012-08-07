@@ -1,7 +1,8 @@
 # throttled_object
 
 `throttled_object` is a Ruby 1.9 library built on top of ruby to provide throttled access
-to a given object. It provides an interface to interact with an object, sleeping if it's unavailable.
+to a given object. It provides an interface to interact with an object, either sleeping or raising
+an exception when it's not available.
 
 The ideal use for this is for access to APIs with a blocking interface (e.g. Run the code in a thread,
 sleep until it's available).
