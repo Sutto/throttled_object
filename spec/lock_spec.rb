@@ -10,15 +10,15 @@ describe ThrottledObject::Lock do
   end
 
   it 'should throttle access under the limit' do
-    expect_to_take(0.0..0.99) { 4.times { lock.lock } }
+    expect_to_take(0.0..0.99) { 4.times { lock.wait_for_lock } }
   end
 
   it 'should throttle access equal to the limit' do
-    expect_to_take(0.0..0.99) { 5.times { lock.lock } }
+    expect_to_take(0.0..0.99) { 5.times { lock.wait_for_lock } }
   end
 
   it 'correctly throttle access over the limit' do
-    expect_to_take(1.0..1.99) { 6.times { lock.lock } }
+    expect_to_take(1.0..1.99) { 6.times { lock.wait_for_lock } }
   end
 
   def expect_to_take(range, &block)

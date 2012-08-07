@@ -3,7 +3,20 @@ require 'redis'
 module ThrottledObject
   class Lock
 
-    class Unavailable < StandardError; end
+    class Error < StandardError; end
+    class Unavailable < Error; end
+    class WaitForLock < Error
+
+      attr_reader :available_at, :wait_for
+
+      def initialize(time, *args)
+        super *args
+        @available_at = Time.now + time
+        @wait_for     = time
+      end
+
+    end
+
 
     KEY_PREFIX = "throttled_object:key:"
 
@@ -26,12 +39,13 @@ module ThrottledObject
     # 2. Occassionally, we need to abort after a short period.
     #
     # So, the lock method operates in two methods. The first, and default, we will basically
-    # loop and attempt to aggressively obtain the lock. We loop until we've obtained a lock - 
+    # loop and attempt to aggressively obtain the lock. We loop until we've obtained a lock -
     # To obtain the lock, we increment the current periods counter and check if it's <= the max count.
     # If it is, we have a lock. If not, we sleep until the lock should be 'fresh' again.
     #
     # If we're the first one to obtain a lock, we update some book keeping data.
     def lock(max_time = nil)
+      raise 'lock must be called with a block' unless block_given?
       started_at = current_period
       has_lock   = false
       until has_lock
@@ -58,13 +72,28 @@ module ThrottledObject
           obtained_at = [redis.get("#{current_key}:obtained_at").to_i, lockable_time].max
           next_period = (lockable_time + period)
           wait_for    = (next_period - current_period).to_f / 1000
-          sleep wait_for
+          yield wait_for
         end
       end
     end
 
+    def wait_for_lock(*args)
+      lock(*args) { |time| sleep time }
+    end
+
+    def lock!(*args)
+      lock(*args) do |time|
+        raise WaitForLock.new(time, "Lock unavailable, please wait #{time} seconds and attempt again.")
+      end
+    end
+
     def synchronize(*args, &blk)
-      lock *args
+      wait_for_lock *args
+      yield if block_given?
+    end
+
+    def synchronize!(*args, &blk)
+      lock! *args
       yield if block_given?
     end
 

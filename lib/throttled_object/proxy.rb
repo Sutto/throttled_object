@@ -5,17 +5,24 @@ module ThrottledObject
 
     attr_accessor :lock, :throttled_methods
 
-    def initialize(object, lock, throttled_methods = nil)
+    def initialize(object, options = {})
       super object
-      @lock              = lock
+      @lock              = options.fetch(:lock)
+      @blocking          = options.fetch :blocking, true
+      @lock_method       = @blocking ? :synchronize : :synchronize!
+      throttled_methods  = options.fetch :methods, nil
       @throttled_methods = throttled_methods && throttled_methods.map(&:to_sym)
     end
 
     private
 
+    def lock_method?(m)
+      throttled_methods.nil? || throttled_methods.include?(m.to_sym)
+    end
+
     def method_missing(m, *args, &block)
-      if throttled_methods.nil? || throttled_methods.include?(m.to_sym)
-        @lock.synchronize { super }
+      if lock_method?(m)
+        @lock.send(@lock_method) { super }
       else
         super
       end

@@ -17,7 +17,7 @@ describe ThrottledObject::Proxy do
   end
 
   it 'should let you control which methods invoke it' do
-    proxy = ThrottledObject::Proxy.new target, lock, [:hello]
+    proxy = ThrottledObject::Proxy.new target, lock: lock, methods: [:hello]
     proxy.one.should == 1
     lock.value.should == 0
     proxy.other.should == nil
@@ -29,7 +29,7 @@ describe ThrottledObject::Proxy do
   end
 
   it 'should default to requiring all are throttled' do
-    proxy = ThrottledObject::Proxy.new target, lock
+    proxy = ThrottledObject::Proxy.new target, lock: lock
     expect do
       proxy.one.should == 1
     end.to change(lock, :value).by(1)
