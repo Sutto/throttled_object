@@ -21,6 +21,23 @@ describe ThrottledObject::Lock do
     expect_to_take(1.0..1.99) { 6.times { lock.wait_for_lock } }
   end
 
+  it 'should allow you to have an exceptional version' do
+    started_at = Time.now.to_f
+    ended_at   = nil
+    5.times { lock.lock! }
+    begin
+      lock.lock!
+      raise 'Should not reach this point'
+    rescue => e
+      ended_at = Time.now.to_f
+      e.should be_a ThrottledObject::Lock::WaitForLock
+      time_range = (started_at + 1.0)..(started_at + 2.0)
+      time_range.should include e.available_at.to_f
+    end
+    ended_at.should_not be_nil
+    (0.0..0.99).should include (ended_at - started_at)
+  end
+
   def expect_to_take(range, &block)
     start_time = Time.now.to_f
     yield if block_given?
