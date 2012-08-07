@@ -41,4 +41,13 @@ describe ThrottledObject::Proxy do
     end.to change(lock, :value).by(1)
   end
 
+  it 'should let you make a blocking one' do
+    def lock.synchronize!; yield if block_given?; end
+    def lock.synchronize; raise 'Lock using synchronize, not synchronize!.'; end
+    proxy = ThrottledObject::Proxy.new target, lock: lock, blocking: false
+    proxy.one.should == 1
+    proxy = ThrottledObject::Proxy.new target, lock: lock, blocking: true
+    expect { proxy.one }.to raise_error
+  end
+
 end

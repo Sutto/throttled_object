@@ -38,6 +38,18 @@ describe ThrottledObject::Lock do
     (0.0..0.99).should include (ended_at - started_at)
   end
 
+  it 'should use lock! for synchronize!' do
+    dont_allow(lock).wait_for_lock
+    mock.proxy(lock).lock! { |v| v }
+    lock.synchronize! { true }
+  end
+
+  it 'should use wait_for_lock for synchronize' do
+    dont_allow(lock).lock!
+    mock.proxy(lock).wait_for_lock { |v| v }
+    lock.synchronize { true }
+  end
+
   def expect_to_take(range, &block)
     start_time = Time.now.to_f
     yield if block_given?

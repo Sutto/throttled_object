@@ -16,8 +16,8 @@ Gem::Specification.new do |gem|
   gem.version       = ThrottledObject::VERSION
 
   gem.add_dependency 'redis', '~> 3.0'
-  gem.add_development_dependency 'timecop'
   gem.add_development_dependency 'rspec', '~> 2.0'
   gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rr'
 
 end
